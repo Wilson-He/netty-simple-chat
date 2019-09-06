@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>小小的聊天室</title>
+    <link rel="icon" href="./static/img/chat.ico" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="./static/css/chatroom.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/common/layui.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/common/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/common/fileinput.min.css">
+</head>
+<body>
+<div class="qqBox">
+    <div class="BoxHead">
+        <div class="headImg">
+            <img id="avatarUrl" src="static/img/avatar/Member001.jpg"/>
+        </div>
+        <div id="username" class="internetName"></div>
+    </div>
+    <div class="context">
+        <div class="conRight">
+            <div class="Righthead">
+                <div class="headName"></div>
+            </div>
+
+        </div>
+        <div id="content"></div>
+    </div>
+
+    <div class="inputBox">
+        <!--            <div class="inputBox">-->
+        <textarea id="dope"
+                  style="overflow:hidden;width: 100%;height: 75px;border-bottom: none;border-left: none;border-right: none; outline: none;"
+                  name="" rows="" cols=""></textarea>
+        <button title="按下回车可发送" class="sendBtn">发送</button>
+    </div>
+</div>
+
+<script type="text/javascript" src="./static/js/common/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="./static/js/common/jquery.actual.min.js"></script>
+<script type="text/javascript" src="./static/js/common/bootstrap.min.js"></script>
+<script type="text/javascript">
+    var userId;
+    var socket;
+    var sentMessageMap;
+
+    $(document).ready(function () {
+        $(".sendBtn").click(function () {
+            var content = $("#dope").val();
+            $("#content").append("<br/>" + content);
+            $("#dope").val("");
+            var fromUserId = getUrlParam("fromUserId");
+            var toUserId = getUrlParam("toUserId");
+            ws.sendMsg(fromUserId, toUserId, content);
+        });
+    });
+
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+    }
+    if (window.WebSocket) {
+        socket = new WebSocket("ws://localhost:9000/chat");
+        socket.onmessage = function (event) {
+            console.log(event.data);
+        };
+        socket.onopen = function () {
+            console.log("websocket connect success");
+        };
+        socket.onclose = function () {
+            console.log("websocket close");
+        };
+    } else {
+        alert("您的浏览器不支持WebSocket！");
+    }
+
+    var ws = {
+        register: function () {
+            if (!window.WebSocket) {
+                return;
+            }
+            if (socket.readyState === WebSocket.OPEN) {
+                var data = {
+                    "userId": userId,
+                    "type": "REGISTER"
+                };
+                socket.send(JSON.stringify(data));
+            } else {
+                alert("Websocket连接没有开启！");
+            }
+        },
+        sendMsg: function (fromUserId, toUserId, content) {
+            if (socket.readyState === WebSocket.OPEN) {
+                var data = {
+                    "fromUserId": fromUserId,
+                    "toUserId": toUserId,
+                    "content": content
+                };
+                socket.send(JSON.stringify(data));
+            } else {
+                alert("Websocket连接没有开启!");
+            }
+        },
+        receiveMsg: function () {
+            if (socket.readyState === WebSocket.OPEN) {
+                var data = {
+                    "fromUserId": fromUserId,
+                    "toUserId": toUserId,
+                    "content": content
+                };
+                socket.send(JSON.stringify(data));
+            } else {
+                alert("Websocket连接没有开启!");
+            }
+        },
+        remove: function () {
+            socket.close();
+        }
+    };
+</script>
+
+
+</body>
+</html>
