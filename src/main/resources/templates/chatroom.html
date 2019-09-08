@@ -43,14 +43,16 @@
     var userId;
     var socket;
     var sentMessageMap;
+    var fromUserId;
+    var toUserId;
 
     $(document).ready(function () {
         $(".sendBtn").click(function () {
             var content = $("#dope").val();
             $("#content").append("<br/>" + content);
             $("#dope").val("");
-            var fromUserId = getUrlParam("fromUserId");
-            var toUserId = getUrlParam("toUserId");
+            fromUserId = getUrlParam("fromUserId");
+            toUserId = getUrlParam("toUserId");
             ws.sendMsg(fromUserId, toUserId, content);
         });
     });
@@ -69,7 +71,14 @@
     if (window.WebSocket) {
         socket = new WebSocket("ws://localhost:9000/chat");
         socket.onmessage = function (event) {
-            console.log(event.data);
+            var data = $.parseJSON(event.data);
+            console.log(data);
+            console.log(data.toUserId + ',' + fromUserId);
+            if(data.toUserId === fromUserId * 1){
+                $("#content").append("<br/>" + data.msg);
+            }
+            // var data = JSON.parse(event.data);
+            // $("#content").append("<br/>" + data.msg);
         };
         socket.onopen = function () {
             console.log("websocket connect success");
