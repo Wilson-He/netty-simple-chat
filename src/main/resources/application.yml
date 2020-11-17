@@ -13,3 +13,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
   resources:
     static-locations: classpath:/templates/
+  mvc:
+    view:
+      suffix: .html
+      prefix: /
+server:
+  port: 9500
