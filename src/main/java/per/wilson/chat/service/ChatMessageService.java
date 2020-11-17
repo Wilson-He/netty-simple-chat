@@ -2,6 +2,8 @@ package per.wilson.chat.service;
 
 import per.wilson.chat.domain.entity.ChatMessage;
 
+import java.util.List;
+
 /**
  * <p>
  * ChatMessage-业务接口
@@ -12,4 +14,5 @@ import per.wilson.chat.domain.entity.ChatMessage;
  */
 public interface ChatMessageService {
 
+    List<ChatMessage> chatMessages(String fromUserId, String toUserId);
 }

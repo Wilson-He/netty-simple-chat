@@ -38,12 +38,12 @@ public class ChatMessage implements Serializable {
     /**
      * 发送者id
      */
-    private Integer senderId;
+    private String senderId;
 
     /**
      * 接收用户id
      */
-    private Integer receiverId;
+    private String receiverId;
 
     /**
      * 消息内容

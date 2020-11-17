@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @ChannelHandler.Sharable
 public class ServerWebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
-    private static ConcurrentHashMap<Integer, Channel> userChannelMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, Channel> userChannelMap = new ConcurrentHashMap<>();
 
     @Resource
     private ChatMessageMapper chatMessageMapper;
@@ -30,8 +30,8 @@ public class ServerWebSocketHandler extends SimpleChannelInboundHandler<TextWebS
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         JSONObject jsonObject = JSONObject.parseObject(frame.text());
-        Integer fromUserId = jsonObject.getInteger("fromUserId");
-        Integer toUserId = jsonObject.getInteger("toUserId");
+        String fromUserId = jsonObject.getString("fromUserId");
+        String toUserId = jsonObject.getString("toUserId");
         Channel currentChannel = ctx.channel();
         Channel oldChannel = userChannelMap.put(fromUserId, currentChannel);
         if (oldChannel != null && !currentChannel.equals(oldChannel)) {
