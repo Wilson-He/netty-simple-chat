@@ -91,28 +91,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <artifactId>generator-maven-plugin</artifactId>
-                <groupId>io.github.wilson-he</groupId>
-                <version>0.1.2</version>
-                <configuration>
-                    <basePackage>per.wilson.chat</basePackage>
-                    <isCleanBefore>true</isCleanBefore>
-                    <dataSource>
-                        <url>jdbc:mysql://localhost:3306/simple_chat</url>
-                        <username>root</username>
-                        <password>tiger</password>
-                        <driverType>MYSQL</driverType>
-                    </dataSource>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 </project>
