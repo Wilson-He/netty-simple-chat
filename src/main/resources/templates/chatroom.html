@@ -9,33 +9,6 @@
     <link rel="stylesheet" type="text/css" href="./static/css/common/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./static/css/common/fileinput.min.css">
 </head>
-<body>
-<div class="qqBox">
-    <div class="BoxHead">
-        <div class="headImg">
-            <img id="avatarUrl" src="static/img/avatar/Member001.jpg"/>
-        </div>
-        <div id="username" class="internetName"></div>
-    </div>
-    <div class="context">
-        <div class="conRight">
-            <div class="Righthead">
-                <div class="headName"></div>
-            </div>
-
-        </div>
-        <div id="content"></div>
-    </div>
-
-    <div class="inputBox">
-        <!--            <div class="inputBox">-->
-        <textarea id="dope"
-                  style="overflow:hidden;width: 100%;height: 75px;border-bottom: none;border-left: none;border-right: none; outline: none;"
-                  name="" rows="" cols=""></textarea>
-        <button title="按下回车可发送" class="sendBtn">发送</button>
-    </div>
-</div>
-
 <script type="text/javascript" src="./static/js/common/jquery-1.9.1.min.js"></script>
 <script type="text/javascript" src="./static/js/common/jquery.actual.min.js"></script>
 <script type="text/javascript" src="./static/js/common/bootstrap.min.js"></script>
@@ -43,17 +16,19 @@
     var userId;
     var socket;
     var sentMessageMap;
-    var fromUserId;
-    var toUserId;
+    var senderId;
+    var receiverId;
 
     $(document).ready(function () {
         $(".sendBtn").click(function () {
-            var content = $("#dope").val();
-            $("#content").append("<br/>" + content);
-            $("#dope").val("");
-            fromUserId = getUrlParam("fromUserId");
-            toUserId = getUrlParam("toUserId");
-            ws.sendMsg(fromUserId, toUserId, content);
+            const content = $("#dope").val();
+            senderId = getUrlParam("fromUserId");
+            receiverId = getUrlParam("toUserId");
+            let result =  ws.sendMsg(senderId, receiverId, content);
+            if(result === 0){
+                $("#content").append("<br/>me: " + content);
+                $("#dope").val("");
+            }
         });
     });
 
@@ -71,20 +46,27 @@
     if (window.WebSocket) {
         socket = new WebSocket("ws://localhost:9000/chat");
         socket.onmessage = function (event) {
-            var data = $.parseJSON(event.data);
-            console.log(data);
-            console.log(data.toUserId + ',' + fromUserId);
-            if(data.toUserId === fromUserId * 1){
-                $("#content").append("<br/>" + data.msg);
+            let resp = $.parseJSON(event.data);
+            console.log(resp)
+            if (resp.code === 200) {
+                let data = resp.data;
+                console.log("data:" + data)
+                if (data.receiverId === senderId * 1) {
+                    $("#content").append("<br/>" + data.content);
+                }
+            } else {
+                alert(resp.msg);
             }
+
             // var data = JSON.parse(event.data);
             // $("#content").append("<br/>" + data.msg);
         };
         socket.onopen = function () {
             console.log("websocket connect success");
         };
-        socket.onclose = function () {
+        socket.onclose = function (event) {
             console.log("websocket close");
+            console.log(event.data);
         };
     } else {
         alert("您的浏览器不支持WebSocket！");
@@ -113,6 +95,7 @@
                     "content": content
                 };
                 socket.send(JSON.stringify(data));
+                return 0;
             } else {
                 alert("Websocket连接没有开启!");
             }
@@ -120,8 +103,8 @@
         receiveMsg: function () {
             if (socket.readyState === WebSocket.OPEN) {
                 var data = {
-                    "fromUserId": fromUserId,
-                    "toUserId": toUserId,
+                    "fromUserId": senderId,
+                    "toUserId": receiverId,
                     "content": content
                 };
                 socket.send(JSON.stringify(data));
@@ -134,6 +117,32 @@
         }
     };
 </script>
+
+<body>
+<div class="qqBox">
+    <div class="BoxHead">
+        <div class="headImg">
+            <img id="avatarUrl" src="static/img/avatar/Member001.jpg"/>
+        </div>
+        <div id="username" class="internetName"></div>
+    </div>
+    <div class="context">
+        <div class="conRight">
+            <div class="Righthead">
+                <div class="headName"></div>
+            </div>
+        </div>
+        <div id="content"></div>
+    </div>
+
+    <div class="inputBox">
+        <!--            <div class="inputBox">-->
+        <textarea id="dope"
+                  style="overflow:hidden;width: 100%;height: 75px;border-bottom: none;border-left: none;border-right: none; outline: none;"
+                  name="" rows="" cols=""></textarea>
+        <button title="按下回车可发送" class="sendBtn">发送</button>
+    </div>
+</div>
 
 
 </body>

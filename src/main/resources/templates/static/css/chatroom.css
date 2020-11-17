@@ -4,9 +4,9 @@ body {
 
 .qqBox{
     width: 798px;
-    height: 600px;
+    height: 400px;
     border: 1px solid #ccc;
-    position: absolute;
+    position: relative;
     top: 0;
     bottom: 0;
     left: 0;
@@ -43,6 +43,7 @@ body {
 	-webkit-box-flex: 1;
 	display: -webkit-box;
 	-webkit-box-orient: horizontal;
+    height: 300px;
 }
 .conLeft{
     width: 200px;

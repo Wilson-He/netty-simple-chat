@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.springframework.common.response.ServerResponse;
 import org.springframework.stereotype.Component;
 import per.wilson.chat.domain.entity.ChatMessage;
 import per.wilson.chat.mapper.ChatMessageMapper;
@@ -34,22 +35,20 @@ public class ServerWebSocketHandler extends SimpleChannelInboundHandler<TextWebS
         Channel currentChannel = ctx.channel();
         Channel oldChannel = userChannelMap.put(fromUserId, currentChannel);
         if (oldChannel != null && !currentChannel.equals(oldChannel)) {
-            oldChannel.writeAndFlush("已在其他地点登录");
+            oldChannel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(ServerResponse.build(10001, "你已在其他页面进行登录"))));
             oldChannel.close();
         }
-        JSONObject resp = new JSONObject();
-        resp.put("msg", jsonObject.getString("content"));
-        resp.put("time", LocalDateTime.now());
-        resp.put("toUserId", toUserId);
-        System.err.println("resp:" + resp);
         Channel receiverChannel = userChannelMap.get(toUserId);
-        chatMessageMapper.insert(new ChatMessage()
-                .setContent(jsonObject.getString("content"))
+        ChatMessage chatMessage = new ChatMessage()
+                .setContent(fromUserId + ": " + jsonObject.getString("content"))
                 .setSenderId(fromUserId)
-                .setReceiverId(toUserId));
+                .setReceiverId(toUserId);
+        chatMessageMapper.insert(chatMessage);
+        String jsonResponse = JSONObject.toJSONString(ServerResponse.success(chatMessage));
+        System.out.println(jsonResponse);
         if (receiverChannel != null) {
-            receiverChannel.writeAndFlush(new TextWebSocketFrame(resp.toString()));
+            receiverChannel.writeAndFlush(new TextWebSocketFrame(jsonResponse));
         }
-        currentChannel.writeAndFlush(new TextWebSocketFrame(resp.toString()));
+        currentChannel.writeAndFlush(new TextWebSocketFrame(jsonResponse));
     }
 }

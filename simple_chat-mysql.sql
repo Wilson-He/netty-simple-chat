@@ -111,8 +111,8 @@ CREATE TABLE IF NOT EXISTS `simple_chat`.`chat_message` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `type` VARCHAR(20) NOT NULL DEFAULT 'TEXT' COMMENT '消息类型(TEXT-文本)',
   `is_new` BIT NOT NULL DEFAULT 1 COMMENT '是否新消息(未读)',
-  `sender_id` INT NOT NULL COMMENT '发送者id',
-  `receiver_id` INT NOT NULL COMMENT '接收用户id',
+  `sender_id` VARCHAR(32) NOT NULL COMMENT '发送者id',
+  `receiver_id` VARCHAR(32) NOT NULL COMMENT '接收用户id',
   `content` TEXT NOT NULL COMMENT '消息内容',
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`))

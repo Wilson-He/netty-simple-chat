@@ -4,8 +4,8 @@ CREATE SCHEMA simple_chat
 CREATE TABLE public.chat_message
 (
     id serial NOT NULL,
-    sender_id integer NOT NULL,
-    receiver_id integer NOT NULL,
+    sender_id character varying(32) NOT NULL,
+    receiver_id character varying(32) NOT NULL,
     content text COLLATE pg_catalog."default",
     CONSTRAINT chat_message_pkey PRIMARY KEY (id)
 )
