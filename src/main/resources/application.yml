@@ -1,12 +1,12 @@
-swagger:
-  docket:
-    base-package: per.wilson.chat.controller
-
 mybatis-plus:
   mapper-locations: classpath:/mappers/**
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/simple_chat?serverTimezone=UTC
-    username: root
-    password: tiger
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://localhost:5432/simple_chat
+    username: kuka
+    password: kuka
+#    url: jdbc:mysql://localhost:3306/simple_chat
+#    username: root
+#    password: tiger
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver

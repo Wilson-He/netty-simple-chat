@@ -39,16 +39,16 @@ public class WebSocketConfig {
     }
 
     @Bean
-    public ServerBootstrap serverBootstrap(NioEventLoopGroup bossGroup, NioEventLoopGroup workerGroup) {
+    public ServerBootstrap serverBootstrap(NioEventLoopGroup bossGroup, NioEventLoopGroup workerGroup, ChatServerInitializer chatServerInitializer) {
         ServerBootstrap serverBootstrap = new ServerBootstrap()
                 // boss负责客户端的tcp连接请求  worker负责与客户端之前的读写操作
                 .group(bossGroup, workerGroup)
                 //配置客户端的channel类型
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChatServerInitializer())
+                .childHandler(chatServerInitializer)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
-                //配置TCP参数，握手字符串长度设置
+        //配置TCP参数，握手字符串长度设置
 //                .option(ChannelOption.SO_BACKLOG, 1024)
 //                //TCP_NODELAY算法，尽可能发送大块数据，减少充斥的小块数据
 //                .option(ChannelOption.TCP_NODELAY, true)
@@ -57,7 +57,7 @@ public class WebSocketConfig {
 //                //配置固定长度接收缓存区分配器
 //                .childOption(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(592048))
 //                .childHandler(new ChatServerInitializer(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE)));
-        new Thread(() -> serverChannelFuture = serverBootstrap.bind(port));
+        serverChannelFuture = serverBootstrap.bind(port);
         // 绑定I/O事件的处理类,WebSocketChildChannelHandler中定义
         return serverBootstrap;
     }
