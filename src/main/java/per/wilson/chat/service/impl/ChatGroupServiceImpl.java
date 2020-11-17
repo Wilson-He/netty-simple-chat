@@ -16,6 +16,4 @@ import javax.annotation.Resource;
  */
 @Service
 public class ChatGroupServiceImpl implements ChatGroupService{
-    @Resource
-    private ChatGroupMapper chatGroupMapper;
 }

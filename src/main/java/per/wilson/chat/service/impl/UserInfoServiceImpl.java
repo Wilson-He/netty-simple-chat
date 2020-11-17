@@ -1,9 +1,8 @@
 package per.wilson.chat.service.impl;
 
-import per.wilson.chat.domain.entity.UserInfo;
+import org.springframework.stereotype.Service;
 import per.wilson.chat.mapper.UserInfoMapper;
 import per.wilson.chat.service.UserInfoService;
-import org.springframework.stereotype.Service;
 import per.wilson.chat.vo.AddUserVO;
 
 import javax.annotation.Resource;

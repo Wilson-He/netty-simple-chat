@@ -16,6 +16,4 @@ import javax.annotation.Resource;
  */
 @Service
 public class FriendGroupServiceImpl implements FriendGroupService{
-    @Resource
-    private FriendGroupMapper friendGroupMapper;
 }

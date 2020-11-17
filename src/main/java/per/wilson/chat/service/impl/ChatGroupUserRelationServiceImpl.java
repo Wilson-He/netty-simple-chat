@@ -16,6 +16,4 @@ import javax.annotation.Resource;
  */
 @Service
 public class ChatGroupUserRelationServiceImpl implements ChatGroupUserRelationService {
-    @Resource
-    private ChatGroupUserRelationMapper chatGroupUserRelationMapper;
 }

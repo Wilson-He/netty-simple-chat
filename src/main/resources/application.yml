@@ -6,7 +6,7 @@ spring:
 #    username: kuka
 #    password: kuka
 #    driver-class-name: org.postgresql.Driver
-    url: jdbc:mysql://localhost:3306/simple_chat
+    url: jdbc:mysql://111.229.4.194:3306/simple_chat
     username: root
     password: tiger
     driver-class-name: com.mysql.cj.jdbc.Driver

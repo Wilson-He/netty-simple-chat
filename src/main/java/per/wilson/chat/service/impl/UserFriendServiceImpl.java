@@ -16,6 +16,4 @@ import javax.annotation.Resource;
  */
 @Service
 public class UserFriendServiceImpl implements UserFriendService{
-    @Resource
-    private UserFriendMapper userFriendMapper;
 }
