@@ -13,19 +13,19 @@
 <script type="text/javascript" src="./static/js/common/jquery.actual.min.js"></script>
 <script type="text/javascript" src="./static/js/common/bootstrap.min.js"></script>
 <script type="text/javascript">
-    var userId;
-    var socket;
-    var sentMessageMap;
-    var senderId;
-    var receiverId;
+    let userId;
+    let socket;
+    let sentMessageMap;
+    let senderId;
+    let receiverId;
 
     $(document).ready(function () {
         $(".sendBtn").click(function () {
             const content = $("#dope").val();
             senderId = getUrlParam("fromUserId");
             receiverId = getUrlParam("toUserId");
-            let result =  ws.sendMsg(senderId, receiverId, content);
-            if(result === 0){
+            let result = ws.sendMsg(senderId, receiverId, content);
+            if (result === 0) {
                 $("#content").append("<br/>me: " + content);
                 $("#dope").val("");
             }
@@ -46,22 +46,29 @@
     if (window.WebSocket) {
         socket = new WebSocket("ws://localhost:9000/chat");
         socket.onmessage = function (event) {
+            senderId = getUrlParam("fromUserId");
             let resp = $.parseJSON(event.data);
             console.log(resp)
             if (resp.code === 200) {
                 let data = resp.data;
                 console.log("data:" + data)
+                console.log("data receiverId:" + data.receiverId)
+                console.log("senderId:" + senderId)
                 if (data.receiverId === senderId) {
                     $("#content").append("<br/>" + data.content);
                 }
             } else {
                 alert(resp.msg);
             }
-
             // var data = JSON.parse(event.data);
             // $("#content").append("<br/>" + data.msg);
         };
         socket.onopen = function () {
+            // ws.sendMsg(getUrlParam("fromUserId"), null, null);
+            let data = {
+                "fromUserId": getUrlParam("fromUserId")
+            };
+            socket.send(JSON.stringify(data));
             console.log("websocket connect success");
         };
         socket.onclose = function (event) {
@@ -94,6 +101,7 @@
                     "toUserId": toUserId,
                     "content": content
                 };
+                console.log(JSON.stringify(data));
                 socket.send(JSON.stringify(data));
                 return 0;
             } else {

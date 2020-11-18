@@ -23,10 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @ChannelHandler.Sharable
 public class ServerWebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private static ConcurrentHashMap<String, Channel> userChannelMap = new ConcurrentHashMap<>();
+    private static final String CONNECT_SUCCESS = "200";
+
 
     @Resource
     private ChatMessageMapper chatMessageMapper;
-
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         JSONObject jsonObject = JSONObject.parseObject(frame.text());
@@ -37,6 +38,9 @@ public class ServerWebSocketHandler extends SimpleChannelInboundHandler<TextWebS
         if (oldChannel != null && !currentChannel.equals(oldChannel)) {
             oldChannel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(ServerResponse.build(10001, "你已在其他页面进行登录"))));
             oldChannel.close();
+        }
+        if (toUserId == null) {
+            return;
         }
         Channel receiverChannel = userChannelMap.get(toUserId);
         ChatMessage chatMessage = new ChatMessage()
