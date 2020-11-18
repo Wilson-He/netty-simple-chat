@@ -1,14 +1,12 @@
 package per.wilson.chat.config;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.ImmediateEventExecutor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +17,7 @@ import javax.annotation.PreDestroy;
  * @author Wilson
  * @date 2019/9/6
  **/
+@Slf4j
 @Configuration
 public class WebSocketConfig {
     @Value("${netty.server.port:9000}")
@@ -58,6 +57,7 @@ public class WebSocketConfig {
 //                .childOption(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(592048))
 //                .childHandler(new ChatServerInitializer(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE)));
         serverChannelFuture = serverBootstrap.bind(port);
+        System.err.println("serverChannelFuture:" + serverChannelFuture);
         // 绑定I/O事件的处理类,WebSocketChildChannelHandler中定义
         return serverBootstrap;
     }
@@ -73,5 +73,6 @@ public class WebSocketConfig {
         } catch (InterruptedException ignore) {
             ignore.printStackTrace();
         }
+        log.info("netty shutdown gracefully");
     }
 }
