@@ -6,6 +6,7 @@ import per.wilson.chat.domain.entity.ChatMessage;
 import per.wilson.chat.mapper.ChatMessageMapper;
 import per.wilson.chat.service.ChatMessageService;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -28,4 +29,5 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 .eq(ChatMessage::getReceiverId, toUserId)
                 .eq(ChatMessage::getSenderId, fromUserId));
     }
+
 }
