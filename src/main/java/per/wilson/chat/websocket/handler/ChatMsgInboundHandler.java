@@ -22,6 +22,7 @@ import javax.annotation.Resource;
  * @date 2019/9/4
  **/
 @Component
+@ChannelHandler.Sharable
 @Slf4j
 public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
