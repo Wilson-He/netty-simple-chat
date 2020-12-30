@@ -22,7 +22,6 @@ import javax.annotation.Resource;
  * @date 2019/9/4
  **/
 @Component
-@ChannelHandler.Sharable
 @Slf4j
 public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
@@ -75,7 +74,11 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
         super.channelUnregistered(ctx);
     }
 
-
+    /**
+     * 业务消息处理
+     * @param ctx
+     * @param frame
+     */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         String msgJson = frame.text();

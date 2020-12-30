@@ -28,7 +28,6 @@ public class WebSocketConfig {
     @Value("${netty.websocket.path:/chat}")
     private String contextPath;
 
-    private ChannelFuture serverChannelFuture;
     private NioEventLoopGroup bossGroup;
     private NioEventLoopGroup workerGroup;
 
@@ -45,14 +44,14 @@ public class WebSocketConfig {
     @Bean
     public ServerBootstrap serverBootstrap(NioEventLoopGroup bossGroup, NioEventLoopGroup workerGroup, ChatServerInitializer chatServerInitializer) {
         ServerBootstrap serverBootstrap = new ServerBootstrap()
-                // boss负责客户端的tcp连接请求  worker负责与客户端之前的读写操作
+                // boss负责客户端的tcp连接请求  worker负责与客户端之间的I/O操作
                 .group(bossGroup, workerGroup)
                 //配置客户端的channel类型
                 .channel(NioServerSocketChannel.class)
                 .childHandler(chatServerInitializer)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
-        serverChannelFuture = serverBootstrap.bind(port);
+        serverBootstrap.bind(port);
         log.info("netty start on port: {}", port);
         // 绑定I/O事件的处理类,WebSocketChildChannelHandler中定义
         return serverBootstrap;
@@ -60,15 +59,8 @@ public class WebSocketConfig {
 
     @PreDestroy
     public void destroy() {
-        Future<?> bossGroupFuture = bossGroup.shutdownGracefully();
-        Future<?> workerGroupFuture = workerGroup.shutdownGracefully();
-        serverChannelFuture.channel().close();
-        try {
-            bossGroupFuture.await();
-            workerGroupFuture.await();
-        } catch (InterruptedException ignore) {
-            ignore.printStackTrace();
-        }
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
         log.info("netty shutdown gracefully");
     }
 }

@@ -25,16 +25,16 @@ import java.util.Set;
 /**
  * @author Wilson
  */
-@Component
 @Slf4j
 @SuppressWarnings({"rawtypes", "unchecked"})
+@Component
 public class MessageContext implements ApplicationContextAware {
     /**
-     * Map{消息类名前缀：消息类Class}
+     * Map{消息类名前缀：消息类Class}，用于fastjson根据消息内容中的msgType反序列化成实际WebSocket消息类
      */
     private Map<String, Class<? extends WebSocketMessage>> msgTypeMap;
     /**
-     * Map{消息类名前缀：消息类对应的handler}
+     * Map{消息类名前缀：消息类对应的handler}，消息类名前缀=策略名，用于根据消息类型参数获取对应的消息策略处理器
      */
     private Map<String, MessageHandler> messageHandlerMap;
 
@@ -47,6 +47,7 @@ public class MessageContext implements ApplicationContextAware {
         Map<String, MessageHandler> handlerBeanMap = applicationContext.getBeansOfType(MessageHandler.class);
         this.messageHandlerMap = new HashMap<>(handlerBeanMap.size());
         this.msgTypeMap = new HashMap<>(handlerBeanMap.size());
+        // 反射获取所有策略处理类MessageHandler实际处理的消息类型，并生成所需Map:msgTypeMap、messageHandlerMap
         handlerBeanMap.values()
                 .forEach(messageHandler -> {
                     Method handleMsg;
