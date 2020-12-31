@@ -43,6 +43,7 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
             httpRequestHandle(ctx, request);
             // 将地址栏参数转换为json
             WebSocketMessage message = messageContext.convertJsonToMessage(paramsJson);
+            message.setChannel(ctx.channel());
             log.info("user {} is online", message.getFromUser());
             messageContext.registerMessage(message);
         }
