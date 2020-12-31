@@ -75,16 +75,14 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
     }
 
     /**
-     * 业务消息处理
+     * 消息处理
      *
      * @param ctx
      * @param frame
      */
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
-        String msgJson = frame.text();
-        // 消息处理
-        messageContext.handleMessage(msgJson);
+        messageContext.handleMessage(frame.text());
     }
 
     /**
