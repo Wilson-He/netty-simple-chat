@@ -1,11 +1,13 @@
 package per.wilson.chat.websocket.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.springframework.common.exception.BusinessException;
 import io.springframework.common.response.ServerResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,6 @@ import per.wilson.chat.websocket.MessageContext;
 import per.wilson.chat.websocket.WebSocketConfig;
 import per.wilson.chat.websocket.msg.WebSocketMessage;
 import per.wilson.chat.websocket.utils.RequestUtils;
-import per.wilson.chat.websocket.utils.WebSocketMessageUtils;
 
 import javax.annotation.Resource;
 
@@ -41,12 +42,9 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
             // 清空参数重置路径，故不能与上一行提取互换
             httpRequestHandle(ctx, request);
             // 将地址栏参数转换为json
-            if (paramsJson.containsKey(WebSocketMessage.MSG_TYPE)) {
-                WebSocketMessage message = messageContext.convertJsonToMessage(paramsJson);
-                message.setChannel(ctx.channel());
-                log.info("user {} is online",  message.getFromUser());
-                messageContext.registerMessage(message);
-            }
+            WebSocketMessage message = messageContext.convertJsonToMessage(paramsJson);
+            log.info("user {} is online", message.getFromUser());
+            messageContext.registerMessage(message);
         }
         super.channelRead(ctx, msg);
     }
@@ -77,6 +75,7 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
 
     /**
      * 业务消息处理
+     *
      * @param ctx
      * @param frame
      */
@@ -84,13 +83,24 @@ public class ChatMsgInboundHandler extends SimpleChannelInboundHandler<TextWebSo
     public void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame frame) {
         String msgJson = frame.text();
         // 消息处理
-        if (messageContext.isValidMessage(msgJson)) {
-            messageContext.handleMessage(msgJson);
-        } else {
-            // 无效的消息类型
-            ctx.channel().writeAndFlush(WebSocketMessageUtils.websocketFrame(
-                    ServerResponse.paramError("请求参数错误，请检查消息类型与内容格式是否正确")));
-        }
+        messageContext.handleMessage(msgJson);
     }
 
+    /**
+     * 对消息处理过程中抛出的异常进行处理
+     *
+     * @param ctx
+     * @param cause
+     */
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (cause instanceof BusinessException) {
+            System.out.println(ctx.channel().isOpen());
+            ServerResponse<?> response = ServerResponse.serverError(cause.getMessage());
+            log.error("netty handler exceptionCaught: {}", cause.getMessage());
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(response)));
+        } else {
+            super.exceptionCaught(ctx, cause);
+        }
+    }
 }

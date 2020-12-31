@@ -115,10 +115,12 @@
         let params;
         if (getUrlParam("msgType") === "PrivateChat") {
             params = "?fromUser=" + getUrlParam("fromUser") + "&toUser=" + getUrlParam("toUser") + "&msgType=PrivateChat";
-        } else {
+        } else if (getUrlParam("msgType") === "GroupChat") {
             let user = getUrlParam("fromUser") === null ? randomString(6) : getUrlParam("fromUser");
             let roomId = getUrlParam("roomId");
             params = "?msgType=GroupChat&fromUser=" + user + "&roomId=" + roomId;
+        } else {
+            params = "?msgType=null";
         }
         socket = new WebSocket("ws://localhost:9000/chat" + params);
         socket.onmessage = function (event) {
@@ -161,7 +163,7 @@
         };
         socket.onclose = function (event) {
             console.log("websocket close");
-            console.log(event.data);
+            console.log(event);
         };
     } else {
         alert("您的浏览器不支持WebSocket！");

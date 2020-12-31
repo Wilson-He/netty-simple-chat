@@ -18,3 +18,5 @@ swagger:
         name: Wilson
         email: 845023508@qq.com
 #debug: true
+logging:
+  config: classpath:logback-spring.xml

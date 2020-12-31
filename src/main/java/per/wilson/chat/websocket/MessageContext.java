@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONValidator;
 import io.netty.channel.Channel;
+import io.springframework.common.exception.BusinessException;
 import io.springframework.common.response.ServerResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -131,7 +132,7 @@ public class MessageContext implements ApplicationContextAware {
             MessageHandler messageHandler = getMessageHandler(msgType);
             return messageHandler.handleMsg(message);
         } else {
-            throw new IllegalArgumentException("invalid msg json");
+            throw new BusinessException("请求参数错误，请检查消息类型与内容格式是否正确");
         }
     }
 
