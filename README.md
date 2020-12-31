@@ -1,15 +1,5 @@
-运行流程：
-1. 根据数据库导入sql(simple_chat-mysql.sql/simple-chat-postgresql.sql)
-2. 根据数据库配置修改application.yml
-3. 运行ChatApplication
-4. 打开2个`/resources/templates`下的`chatroom.html`页面，分别在两个页面末尾添加`?fromUserId=1&toUserId=2`、`?fromUserId=2&toUserId=1`参数并输入内容即可
-
-
-
-处理逻辑：
-1. 用户打开聊天窗口，前端根据不同的类型(私聊、群聊)
-
-
+# 简介
+基于netty结合Spring Boot搭建的一个简单WebSocket聊天室Demo，WebSocket消息路由基于个人设计的策略模式，由于前端不是专业的所以比较简陋。
 # 快速开始
 1. 运行 `ChatApplication`
 2. 打开聊天窗口
